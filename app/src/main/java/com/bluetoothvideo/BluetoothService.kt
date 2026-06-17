@@ -91,3 +91,61 @@ class BluetoothService(private val listener: BluetoothListener) {
                         try { socket.close() } catch (e: IOException) { }
                     }
                 }
+            }
+        }
+
+        fun cancel() { try { serverSocket?.close() } catch (e: IOException) { } }
+    }
+
+    private inner class ConnectThread(private val device: BluetoothDevice) : Thread() {
+        private val socket: BluetoothSocket? = try {
+            device.createRfcommSocketToServiceRecord(APP_UUID)
+        } catch (e: IOException) { null }
+
+        override fun run() {
+            bluetoothAdapter?.cancelDiscovery()
+            try {
+                socket?.connect()
+                connected(socket!!, device.name ?: "Unknown")
+            } catch (e: IOException) {
+                try { socket?.close() } catch (e2: IOException) { }
+                listener.onConnectionFailed()
+            }
+        }
+
+        fun cancel() { try { socket?.close() } catch (e: IOException) { } }
+    }
+
+    inner class ConnectedThread(private val socket: BluetoothSocket) : Thread() {
+        private val inputStream: InputStream = socket.inputStream
+        private val outputStream: OutputStream = socket.outputStream
+        private val buffer = ByteArray(65536)
+
+        override fun run() {
+            while (true) {
+                try {
+                    val bytes = inputStream.read(buffer)
+                    if (bytes > 0) listener.onDataReceived(buffer.copyOf(bytes), bytes)
+                } catch (e: IOException) {
+                    listener.onDisconnected()
+                    break
+                }
+            }
+        }
+
+        fun write(data: ByteArray) {
+            try {
+                val sizeBytes = ByteArray(4)
+                sizeBytes[0] = (data.size shr 24).toByte()
+                sizeBytes[1] = (data.size shr 16).toByte()
+                sizeBytes[2] = (data.size shr 8).toByte()
+                sizeBytes[3] = data.size.toByte()
+                outputStream.write(sizeBytes)
+                outputStream.write(data)
+                outputStream.flush()
+            } catch (e: IOException) { Log.e(TAG, "Failed to write", e) }
+        }
+
+        fun cancel() { try { socket.close() } catch (e: IOException) { } }
+    }
+}
