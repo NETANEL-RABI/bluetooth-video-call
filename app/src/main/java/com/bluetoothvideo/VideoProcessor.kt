@@ -12,9 +12,9 @@ import java.nio.ByteBuffer
 
 object VideoProcessor {
 
-    const val FRAME_WIDTH = 320
-    const val FRAME_HEIGHT = 240
-    const val JPEG_QUALITY = 40
+    const val FRAME_WIDTH = 176
+    const val FRAME_HEIGHT = 144
+    const val JPEG_QUALITY = 20
 
     fun imageToJpegBytes(image: Image): ByteArray {
         val planes = image.planes
