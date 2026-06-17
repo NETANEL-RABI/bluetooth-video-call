@@ -17,6 +17,7 @@ import android.widget.Button
 import android.widget.ListView
 import android.widget.ProgressBar
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -60,7 +61,7 @@ class MainActivity : AppCompatActivity() {
                     progressBar.visibility = View.GONE
                     scanButton.isEnabled = true
                     statusText.text = if (deviceList.isEmpty())
-                        "No devices found. Make sure the other device is visible."
+                        "No devices found."
                     else
                         "Found ${deviceList.size} devices. Select one."
                 }
@@ -71,9 +72,13 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        initViews()
-        setupBluetooth()
-        registerBluetoothReceiver()
+        try {
+            initViews()
+            setupBluetooth()
+            registerBluetoothReceiver()
+        } catch (e: Exception) {
+            Toast.makeText(this, "Error: ${e.message}", Toast.LENGTH_LONG).show()
+        }
     }
 
     private fun initViews() {
@@ -98,6 +103,12 @@ class MainActivity : AppCompatActivity() {
     private fun setupBluetooth() {
         val bluetoothManager = getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
         bluetoothAdapter = bluetoothManager.adapter
+
+        if (bluetoothAdapter == null) {
+            statusText.text = "Bluetooth not supported"
+            return
+        }
+
         if (!bluetoothAdapter.isEnabled) {
             val enableBtIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
             startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT)
@@ -171,7 +182,10 @@ class MainActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        unregisterReceiver(bluetoothReceiver)
-        if (bluetoothAdapter.isDiscovering) bluetoothAdapter.cancelDiscovery()
+        try {
+            unregisterReceiver(bluetoothReceiver)
+        } catch (e: Exception) { }
+        if (::bluetoothAdapter.isInitialized && bluetoothAdapter.isDiscovering)
+            bluetoothAdapter.cancelDiscovery()
     }
 }
