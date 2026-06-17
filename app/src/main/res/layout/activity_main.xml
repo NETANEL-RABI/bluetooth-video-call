@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:background="#121212">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Bluetooth Video Call"
+        android:textSize="24sp"
+        android:textColor="#FFFFFF"
+        android:textAlignment="center"
+        android:layout_marginTop="24dp"
+        android:layout_marginBottom="8dp"/>
+
+    <TextView
+        android:id="@+id/statusText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Select an action"
+        android:textSize="14sp"
+        android:textColor="#AAAAAA"
+        android:textAlignment="center"
+        android:layout_marginBottom="24dp"/>
+
+    <Button
+        android:id="@+id/waitButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Wait for connection (Server)"
+        android:textSize="16sp"
+        android:layout_marginBottom="12dp"
+        android:backgroundTint="#1976D2"
+        android:padding="16dp"/>
+
+    <Button
+        android:id="@+id/scanButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Scan for devices"
+        android:textSize="16sp"
+        android:layout_marginBottom="16dp"
+        android:backgroundTint="#388E3C"
+        android:padding="16dp"/>
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:visibility="gone"
+        android:layout_marginBottom="8dp"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Available devices:"
+        android:textColor="#CCCCCC"
+        android:textSize="14sp"
+        android:layout_marginBottom="8dp"/>
+
+    <ListView
+        android:id="@+id/deviceListView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="#1E1E1E"
+        android:divider="#333333"
+        android:dividerHeight="1dp"/>
+
+</LinearLayout>
